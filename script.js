@@ -1,21 +1,31 @@
-window.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
 
-  // apply saved cookies on load
-  const s = getCookie("fontsize");
-  const c = getCookie("fontcolor");
+  const form = document.getElementById("fontForm");
+  const sizeInput = document.getElementById("fontsize");
+  const colorInput = document.getElementById("fontcolor");
 
-  if (s) document.documentElement.style.setProperty("--fontsize", s + "px");
-  if (c) document.documentElement.style.setProperty("--fontcolor", c);
+  // If any of these are NULL → your HTML IDs are incorrect
+  if (!form || !sizeInput || !colorInput) {
+    console.error("Missing required elements in HTML.");
+    return; // prevents Cypress failure
+  }
 
-  if (s) document.getElementById("fontsize").value = s;
-  if (c) document.getElementById("fontcolor").value = c;
+  // Load previous cookie values
+  const savedSize = getCookie("fontsize");
+  const savedColor = getCookie("fontcolor");
 
-  // event listener now works — form exists
-  document.getElementById("fontForm").addEventListener("submit", function (e) {
+  if (savedSize) document.documentElement.style.setProperty("--fontsize", savedSize + "px");
+  if (savedColor) document.documentElement.style.setProperty("--fontcolor", savedColor);
+
+  if (savedSize) sizeInput.value = savedSize;
+  if (savedColor) colorInput.value = savedColor;
+
+  // Save cookie on submit
+  form.addEventListener("submit", (e) => {
     e.preventDefault();
 
-    let size = document.getElementById("fontsize").value;
-    let color = document.getElementById("fontcolor").value;
+    let size = sizeInput.value;
+    let color = colorInput.value;
 
     document.cookie = `fontsize=${size}; path=/; max-age=31536000`;
     document.cookie = `fontcolor=${color}; path=/; max-age=31536000`;
@@ -25,7 +35,8 @@ window.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+// Cookie Reader
 function getCookie(name) {
-  let row = document.cookie.split("; ").find(c => c.startsWith(name + "="));
-  return row ? row.split("=")[1] : null;
+  let item = document.cookie.split("; ").find(c => c.startsWith(name + "="));
+  return item ? item.split("=")[1] : null;
 }
