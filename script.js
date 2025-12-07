@@ -1,33 +1,31 @@
-//your JS code here. If required.
-window.onload = function () {
-  const savedSize = getCookie("fontsize");
-  const savedColor = getCookie("fontcolor");
+window.addEventListener("DOMContentLoaded", function () {
 
-  if (savedSize) document.documentElement.style.setProperty("--fontsize", savedSize + "px");
-  if (savedColor) document.documentElement.style.setProperty("--fontcolor", savedColor);
+  // apply saved cookies on load
+  const s = getCookie("fontsize");
+  const c = getCookie("fontcolor");
 
-  if (savedSize) document.getElementById("fontsize").value = savedSize;
-  if (savedColor) document.getElementById("fontcolor").value = savedColor;
-};
+  if (s) document.documentElement.style.setProperty("--fontsize", s + "px");
+  if (c) document.documentElement.style.setProperty("--fontcolor", c);
 
-// ----- SAVE VALUES ON SUBMIT -----
-document.getElementById("fontForm").addEventListener("submit", function (e) {
-  e.preventDefault();
+  if (s) document.getElementById("fontsize").value = s;
+  if (c) document.getElementById("fontcolor").value = c;
 
-  let size = document.getElementById("fontsize").value;
-  let color = document.getElementById("fontcolor").value;
+  // event listener now works — form exists
+  document.getElementById("fontForm").addEventListener("submit", function (e) {
+    e.preventDefault();
 
-  // Save to cookies (1-year expiry)
-  document.cookie = `fontsize=${size}; path=/; max-age=31536000`;
-  document.cookie = `fontcolor=${color}; path=/; max-age=31536000`;
+    let size = document.getElementById("fontsize").value;
+    let color = document.getElementById("fontcolor").value;
 
-  document.documentElement.style.setProperty("--fontsize", size + "px");
-  document.documentElement.style.setProperty("--fontcolor", color);
-  alert("Preferences Saved! Refresh to test persistence.");
+    document.cookie = `fontsize=${size}; path=/; max-age=31536000`;
+    document.cookie = `fontcolor=${color}; path=/; max-age=31536000`;
+
+    document.documentElement.style.setProperty("--fontsize", size + "px");
+    document.documentElement.style.setProperty("--fontcolor", color);
+  });
 });
 
-// ----- COOKIE READER FUNCTION -----
 function getCookie(name) {
-  let value = document.cookie.split("; ").find(row => row.startsWith(name));
-  return value ? value.split("=")[1] : null;
+  let row = document.cookie.split("; ").find(c => c.startsWith(name + "="));
+  return row ? row.split("=")[1] : null;
 }
